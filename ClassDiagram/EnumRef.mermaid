@@ -1,0 +1,67 @@
+classDiagram
+  EnumRef *-- CharacterType
+  EnumRef *-- DamageType
+  EnumRef *-- ItemCategory
+  EnumRef *-- EquipmentSlot
+  EnumRef *-- BuffType
+  class CharacterType{
+    <<enumeration>>
+    Player
+    NPC
+    Mob
+    Boss
+  }
+
+  class DamageType{
+    <<enumeration>>
+    Physical
+    Magical
+    Environment
+    AbnormalStatus
+  }
+
+  class ItemCategory{
+    <<enumeration>>
+    Weapon
+    Armor
+    Potion
+    Skill
+    Currency
+    Miscellaneous
+  }
+
+  class EquipmentSlot{
+    <<enumeration>>
+    Head
+    UpperBody
+    LowerBody
+    MainHand
+  }
+
+  class BuffType {
+    <<enumeration>>
+    P_STR
+    P_INT
+    P_PhysicalResist
+    P_MagicalResist
+    P_HP
+    P_HPMax
+    P_MP
+    P_MPMax
+    N_STR
+    N_INT
+    N_PhysicalResist
+    N_MagicalResist
+    N_HP
+    N_HPMax
+    N_MP
+    N_MPMax
+  }
+
+  class EnumRef{
+    +CharacterType: enum
+    +DamageType: enum
+    +ItemCategory: enum
+    +EquipmentSlot: enum
+    +BuffType: enum
+  }

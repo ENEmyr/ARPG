@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a60a43dd1fa9d54ba1c85b3f31b013f, type: 3}
+  m_Name: INTBullet
+  m_EditorClassIdentifier: 
+  Name: INTBullet
+  Description: 
+  Icon: {fileID: 21300000, guid: b909a7c899938ca4d8c9705a045fe410, type: 3}
+  Category: 3
+  DmgType: 1
+  DmgAmount: 10
+  Cooldown: 1
+  MPUse: 2
+  Renderer: {fileID: 4406929884715499340, guid: 60c3a00a0486ba84493f781e14fc0421, type: 3}

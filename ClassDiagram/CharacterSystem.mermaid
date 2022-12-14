@@ -1,0 +1,84 @@
+classDiagram
+  CharacterStats "1" *-- "*" Stat
+  CharacterStats --|> Monobehavior:extend
+  CharacterProgression --|> Monobehavior:extend
+  CharacterProgression ..> EnumRef:use
+  CharacterCombat --|> Monobehavior:extend
+  CharacterCombat ..> CharacterStats:use
+  CharacterCombat ..> EnumRef:use
+  CharacterStats ..> ItemSystem:use
+  CharacterStats ..> EnumRef:use
+
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+
+  class ItemSystem{
+  }
+
+  class Stat{
+    <<System.Serializable>>
+    -baseValue: float
+    -modifier: List~float~
+    -value: float
+    +AddModifier(float): void
+    +RemoveModifier(float): void
+  }
+
+  class CharacterStats{
+    +Name: string
+    +HP: float
+    +MaxHP: float
+    +MP: float
+    +MaxMP: float
+    +PhysicalResist: Stat
+    +MagicalResist: Stat
+    +AbnormalStat: List~Stat~
+    +temporalAffect: List~Consumable~
+    +STR: Stat
+    +INT: Stat
+    +Skills: List~Skill~
+    +ReceiveDamage(float, DamageType): float
+    +Update(): void
+    +Affect(Consumable, bool): void
+    +Die(): void
+    -passiveAffect(): void
+  }
+
+  class CharacterProgression{
+    +CharType: CharacterType
+    +Level: int
+    +MaxHPModifier: float
+    +MaxMPModifier: float
+    +PEXP: int
+    +MEXP: int
+    +EXPCap: int
+    +PhysicalResistModifier: float
+    +MagicalResistModifier: float
+    +STRModifier: float
+    +INTModifier: float
+    +OnLevelUp: event~System.Action~
+    #CharacterTypeMultiplier: Dictionary~CharacterType, float~
+    #ResistModifierPerLevel: float
+    -s_statusPointPerLevel: int
+    +Awake(): void
+    +ReceiveEXP(int, DamageType): void
+    -calculateEXPCapPerLevel(int): int
+    -levelUp(): void
+    #initLevel(): void
+  }
+
+  class CharacterCombat{
+    <<RequireComponent>>
+    +Stats: CharacterStats
+    +AttackSpeed: float
+    +AttackChance: float
+    +AttackDelay: float
+    +AttackRadius: float
+    +AttackCooldown: Dictionary~string, float~
+    +OnAttack: event~System.Action~
+    +Attack(CharacterStats, Skill): float
+    -doDamage(float, DamageType, CharacterStats, float): IEnumerator
+  }

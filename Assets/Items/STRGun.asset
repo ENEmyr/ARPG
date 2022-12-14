@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c5dad76102f266418ba250681e2c2e9, type: 3}
+  m_Name: STRGun
+  m_EditorClassIdentifier: 
+  Name: STRGun
+  Description: 
+  Icon: {fileID: 21300000, guid: 1f6850aeb76b97b46ad6a9c63207a0ca, type: 3}
+  Category: 0
+  SlotType: 3
+  Prefab: {fileID: 4841149928037241258, guid: 0e6a0cddcd27b7742be9e8010cb890e5, type: 3}
+  ResistModifier: 0.01
+  DamageModifier: 5
+  RadiusModifier: 10
+  EquipmentSkill: {fileID: 11400000, guid: acde27e2f80af9849a05045e191d3a78, type: 2}

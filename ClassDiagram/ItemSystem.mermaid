@@ -1,0 +1,94 @@
+classDiagram
+  Item --|> ScriptableObject:extend
+  Inventory --|> Monobehavior:extend
+  Inventory ..> Item:use
+  Item ..> EnumRef:use
+  Consumable --|> Item:extend
+  Equipment --|> Item:extend
+  Skill --|> Item:extend
+  Equipment ..> EnumRef:use
+  Equipment ..> Skill:use
+  Skill ..> EnumRef:use
+  EquipmentManager ..> Equipment:use
+  EquipmentManager --|> Monobehavior:extend
+  Consumable ..> EnumRef:use
+
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+
+  class ScriptableObject{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  class EnumRef{
+  }
+
+  class Inventory{
+    +s_Instance$: Inventory
+    +Items: List~Item~
+    +OnItemChangedCallback: OnItemChanged
+    -space: int
+    -listIndex: int
+    -Inventory()
+    +Add(Item): bool
+    +Remove(Item): bool
+    +OnItemChanged(): delegate~void~
+    +GetItem(int): Item
+    +NextItem(): Item
+    +PrevItem(): Item
+    +CurrentItem(): Item
+  }
+
+  class Item{
+    <<CreateAssetMenu>>
+    +Name: string
+    +Description: string
+    +Icon: Sprite
+    +Category: ItemCategory
+    +Use(): void
+    #RemoveFromInventory(): void
+  }
+
+  class Consumable{
+    <<CreateAssetMenu>>
+    +AffectTime: float
+    +AmounValue: float
+    +BuffType: BuffType
+    +Use(): void
+  }
+
+  class Equipment{
+    <<CreateAssetMenu>>
+    +SlotType: EquipmentSlot
+    +Mesh: SkinnedMeshRenderer
+    +ResistModifier: float
+    +DamageModifier: float
+    +RadiusModifier: float
+    +EquipmentSkill: Skill
+    +Use(): void
+  }
+
+  class Skill{
+    <<CreateAssetMenu>>
+    +DmgType: DamageType
+    +DmgAmount: float
+    +Cooldown: float
+    +Renderer: GameObject
+    +Use(): void
+  }
+
+  class EquipmentManager{
+    +s_Instance$: EquipmentManager
+    -currEquip: List~Equipment~
+    -currMeshes: List~SkinnedMeshRenderer~
+    +OnEquipmentChangedCallback: OnEquipmentChanged
+    -EquipmentManager()
+    +Equip(Equipment): void
+    +UnEquip(int): void
+    +OnEquipmentChanged(Equipment, Equipment): delegate~void~
+    +GetEquipment(int): Equipment
+  }

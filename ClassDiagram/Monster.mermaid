@@ -1,0 +1,41 @@
+classDiagram
+  MonsterStats --|> CharacterSystem:extend
+  MonsterCombat --|> CharacterSystem:extend
+  MonsterProgression --|> CharacterSystem:extend
+  Monster --|> Monobehavior:extend
+  Monster ..> MonsterStats:use
+  Monster ..> MonsterCombat:use
+  Monster ..> MonsterProgression:use
+
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+
+  class MonsterProgression{
+    +LevelUp(): void
+    +CalculateMonsterEXP(): int
+  }
+  class MonsterStats{
+    +EXPAcquire: int
+    +Die(): void
+  }
+
+  class MonsterCombat{
+    +Attack(CharacterStats, Skill): float
+    -doDamage(CharacterStats, float): IEnumerator
+  }
+
+  class Monster{
+    <<RequireComponent>>
+    +s_Instance$: Monster
+    +Stats: MonsterStats
+    +Combat: MonsterCombat
+    +Progression: MonsterProgression
+    +GameState: GameManager
+    -Monster(): void
+    +Awake(): void
+    +Start(): void
+    +Update(): void
+  }

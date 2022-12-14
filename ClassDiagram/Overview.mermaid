@@ -1,0 +1,36 @@
+classDiagram
+  direction LR
+  ItemSystem ..> EnumRef:use
+  Charactersystem ..> EnumRef:use
+  Charactersystem ..> ItemSystem:use
+  GameManager ..> ItemSystem:use
+  Player ..> GameManager:use
+  Player ..> Charactersystem:use
+  Monster ..> Charactersystem:use
+  Player --|> Monobehavior:extend
+  Monster --|> Monobehavior:extend
+  Charactersystem --|> Monobehavior:extend
+  ItemSystem --|> ScriptableObject:extend
+  ItemSystem --|> Monobehavior:extend
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  class ScriptableObject{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  class EnumRef{
+  }
+  class ItemSystem{
+  }
+  class Charactersystem{
+  }
+  class GameManager{
+  }
+  class Player{
+  }
+  class Monster{
+  }

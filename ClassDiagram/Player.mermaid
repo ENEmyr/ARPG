@@ -1,0 +1,41 @@
+classDiagram
+  PlayerStats --|> CharacterSystem:extend
+  PlayerCombat --|> CharacterSystem:extend
+  Player --|> Monobehavior:extend
+  Player ..> GameManager:use
+  Player ..> PlayerStats:use
+  Player ..> PlayerCombat:use
+  Player ..> CharacterSystem:use
+
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+
+  class GameManager{
+  }
+
+  class PlayerStats{
+    +Die(): void
+  }
+
+  class PlayerCombat{
+    +Attack(CharacterStats, Skill): float
+  }
+
+  class Player{
+    <<RequireComponent>>
+    +s_Instance$: Player
+    +Stats: PlayerStats
+    +Combat: PlayerCombat
+    +Progression: CharacterProgression
+    +GameState: GameManager
+    -Player(): void
+    +Awake(): void
+    +Start(): void
+    +Update(): void
+    +Attack(): void
+    +Respawn(): void
+  }
+
