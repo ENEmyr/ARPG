@@ -7,5 +7,355 @@ ARPG is an AR-based RPG game that, unlike other mobile game trends, aims for int
 > This is merely a practice project for game development skills.
 >
 ## Overview Class Diagram
+```mermaid
+classDiagram
+  direction LR
+  ItemSystem ..> EnumRef:use
+  Charactersystem ..> EnumRef:use
+  Charactersystem ..> ItemSystem:use
+  GameManager ..> ItemSystem:use
+  Player ..> GameManager:use
+  Player ..> Charactersystem:use
+  Monster ..> Charactersystem:use
+  Player --|> Monobehavior:extend
+  Monster --|> Monobehavior:extend
+  Charactersystem --|> Monobehavior:extend
+  ItemSystem --|> ScriptableObject:extend
+  ItemSystem --|> Monobehavior:extend
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  class ScriptableObject{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  class EnumRef{
+  }
+  class ItemSystem{
+  }
+  class Charactersystem{
+  }
+  class GameManager{
+  }
+  class Player{
+  }
+  class Monster{
+  }
+  ```
 
-![Overview Class Diagram](https://raw.githubusercontent.com/ENEmyr/ARPG/main/ClassDiagram/png/Overview.png)
+## Entire Class Diagram
+
+```mermaid
+classDiagram
+  EnumRef *-- CharacterType
+  EnumRef *-- DamageType
+  EnumRef *-- ItemCategory
+  EnumRef *-- EquipmentSlot
+  EnumRef *-- BuffType
+  CharacterStats "1" *-- "*" Stat
+  CharacterStats --|> Monobehavior:extend
+  CharacterProgression --|> Monobehavior:extend
+  CharacterProgression ..> EnumRef:use
+  CharacterCombat --|> Monobehavior:extend
+  CharacterCombat ..> CharacterStats:use
+
+  class Monobehavior{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+
+  class ScriptableObject{
+    <<Unity Class>>
+    ...
+    ...()
+  }
+  
+  class CharacterType{
+    <<enumeration>>
+    Player
+    NPC
+    Mob
+    Boss
+  }
+
+  class DamageType{
+    <<enumeration>>
+    Physical
+    Magical
+    Environment
+    AbnormalStatus
+  }
+
+  class ItemCategory{
+    <<enumeration>>
+    Weapon
+    Armor
+    Potion
+    Skill
+    Currency
+    Miscellaneous
+  }
+
+  class EquipmentSlot{
+    <<enumeration>>
+    Head
+    UpperBody
+    LowerBody
+    MainHand
+  }
+
+  class BuffType {
+    <<enumeration>>
+    P_STR
+    P_INT
+    P_PhysicalResist
+    P_MagicalResist
+    P_HP
+    P_HPMax
+    P_MP
+    P_MPMax
+    N_STR
+    N_INT
+    N_PhysicalResist
+    N_MagicalResist
+    N_HP
+    N_HPMax
+    N_MP
+    N_MPMax
+  }
+
+  class EnumRef{
+    +CharacterType: enum
+    +DamageType: enum
+    +ItemCategory: enum
+    +EquipmentSlot: enum
+    +BuffType: enum
+  }
+
+  class Stat{
+    <<System.Serializable>>
+    -baseValue: float
+    -modifier: List~float~
+    -value: float
+    +AddModifier(float): void
+    +RemoveModifier(float): void
+  }
+
+  class CharacterStats{
+    +Name: string
+    +HP: float
+    +MaxHP: float
+    +MP: float
+    +MaxMP: float
+    +PhysicalResist: Stat
+    +MagicalResist: Stat
+    +AbnormalStat: List~Stat~
+    +temporalAffect: List~Consumable~
+    +STR: Stat
+    +INT: Stat
+    +Skills: List~Skill~
+    +ReceiveDamage(float, DamageType): float
+    +Update(): void
+    +Affect(Consumable, bool): void
+    +Die(): void
+    -passiveAffect(): void
+  }
+
+  class CharacterProgression{
+    +CharType: CharacterType
+    +Level: int
+    +MaxHPModifier: float
+    +MaxMPModifier: float
+    +PEXP: int
+    +MEXP: int
+    +EXPCap: int
+    +PhysicalResistModifier: float
+    +MagicalResistModifier: float
+    +STRModifier: float
+    +INTModifier: float
+    +OnLevelUp: event~System.Action~
+    #CharacterTypeMultiplier: Dictionary~CharacterType, float~
+    #ResistModifierPerLevel: float
+    -s_statusPointPerLevel: int
+    +Awake(): void
+    +ReceiveEXP(int, DamageType): void
+    -calculateEXPCapPerLevel(int): int
+    -levelUp(): void
+    #initLevel(): void
+  }
+
+  class CharacterCombat{
+    <<RequireComponent>>
+    +Stats: CharacterStats
+    +AttackSpeed: float
+    +AttackChance: float
+    +AttackDelay: float
+    +AttackRadius: float
+    +AttackCooldown: Dictionary~string, float~
+    +OnAttack: event~System.Action~
+    +Attack(CharacterStats, Skill): float
+    -doDamage(float, DamageType, CharacterStats, float): IEnumerator
+  }
+
+  Item --|> ScriptableObject:extend
+  Inventory --|> Monobehavior:extend
+  EquipmentManager --|> Monobehavior:extend
+  Inventory ..> Item:use
+  Item ..> EnumRef:use
+  Consumable --|> Item:extend
+  Equipment --|> Item:extend
+  Skill --|> Item:extend
+  Consumable ..> EnumRef:use
+  Equipment ..> EnumRef:use
+  Equipment ..> Skill:use
+  Skill ..> EnumRef:use
+  CharacterStats ..> Skill:use
+  EquipmentManager ..> Equipment:use
+
+  class Inventory{
+    +s_Instance$: Inventory
+    +Items: List~Item~
+    +OnItemChangedCallback: OnItemChanged
+    -space: int
+    -listIndex: int
+    -Inventory()
+    +Add(Item): bool
+    +Remove(Item): bool
+    +OnItemChanged(): delegate~void~
+    +GetItem(int): Item
+    +NextItem(): Item
+    +PrevItem(): Item
+    +CurrentItem(): Item
+  }
+
+  class Item{
+    <<CreateAssetMenu>>
+    +Name: string
+    +Description: string
+    +Icon: Sprite
+    +Category: ItemCategory
+    +Use(): void
+    #RemoveFromInventory(): void
+  }
+
+  class Consumable{
+    <<CreateAssetMenu>>
+    +AffectTime: float
+    +AmounValue: float
+    +BuffType: BuffType
+    +Use(): void
+  }
+
+  class Equipment{
+    <<CreateAssetMenu>>
+    +SlotType: EquipmentSlot
+    +Mesh: SkinnedMeshRenderer
+    +ResistModifier: float
+    +DamageModifier: float
+    +RadiusModifier: float
+    +EquipmentSkill: Skill
+    +Use(): void
+  }
+
+  class Skill{
+    <<CreateAssetMenu>>
+    +DmgType: DamageType
+    +DmgAmount: float
+    +Cooldown: float
+    +Renderer: GameObject
+    +Use(): void
+  }
+
+  class EquipmentManager{
+    +s_Instance$: EquipmentManager
+    -currEquip: List~Equipment~
+    -currMeshes: List~SkinnedMeshRenderer~
+    +OnEquipmentChangedCallback: OnEquipmentChanged
+    -EquipmentManager()
+    +Equip(Equipment): void
+    +UnEquip(int): void
+    +OnEquipmentChanged(Equipment, Equipment): delegate~void~
+    +GetEquipment(int): Equipment
+  }
+
+  GameManager "1" --* "1" EquipmentManager
+  GameManager "1" --* "1" Inventory
+
+  class GameManager{
+    -inv: Inventory
+    -equip: EquipmentManager
+    +EXPMultiplier: float
+  }
+
+  PlayerStats --|> CharacterStats:extend
+  PlayerCombat --|> CharacterCombat:extend
+  Player --|> Monobehavior:extend
+  Player ..> GameManager:use
+  Player ..> PlayerStats:use
+  Player ..> PlayerCombat:use
+  Player ..> CharacterProgression:use
+
+  class PlayerStats{
+    +Die(): void
+  }
+
+  class PlayerCombat{
+    +Attack(CharacterStats, Skill): float
+  }
+
+  class Player{
+    <<RequireComponent>>
+    +s_Instance$: Player
+    +Stats: PlayerStats
+    +Combat: PlayerCombat
+    +Progression: CharacterProgression
+    +GameState: GameManager
+    -Player(): void
+    +Awake(): void
+    +Start(): void
+    +Update(): void
+    +Attack(): void
+    +Respawn(): void
+  }
+
+  MonsterStats --|> CharacterStats:extend
+  MonsterCombat --|> CharacterCombat:extend
+  MonsterProgression --|> CharacterProgression:extend
+  Monster --|> Monobehavior:extend
+  Monster ..> MonsterStats:use
+  Monster ..> MonsterCombat:use
+  Monster ..> MonsterProgression:use
+
+  class MonsterProgression{
+    +LevelUp(): void
+    +CalculateMonsterEXP(): int
+  }
+  class MonsterStats{
+    +EXPAcquire: int
+    +Die(): void
+  }
+
+  class MonsterCombat{
+    +Attack(CharacterStats, Skill): float
+    -doDamage(CharacterStats, float): IEnumerator
+  }
+
+  class Monster{
+    <<RequireComponent>>
+    +s_Instance$: Monster
+    +Stats: MonsterStats
+    +Combat: MonsterCombat
+    +Progression: MonsterProgression
+    +GameState: GameManager
+    -Monster(): void
+    +Awake(): void
+    +Start(): void
+    +Update(): void
+  }
+
+%%Copyright (c) 2022 ENEmy. All Rights Reserved.
+```
