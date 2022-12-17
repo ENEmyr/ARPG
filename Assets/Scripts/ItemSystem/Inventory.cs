@@ -35,7 +35,12 @@ namespace ItemSystem
                 Debug.Log("Inventory slot is full");
                 return false;
             }
-            this.items.Add(item);
+            if (this.items.Contains(item))
+            {
+                int itemIndex = this.items.IndexOf(item);
+                this.items[itemIndex].StackSize++;
+            } else
+                this.items.Add(item);
             if (this.OnItemChangedCallback != null)
                 this.OnItemChangedCallback.Invoke();
             if (this.OnItemIndexChanged != null) 
@@ -45,16 +50,25 @@ namespace ItemSystem
         public bool Remove(Item item)
         {
             int itemIndex = this.items.IndexOf(item);
-            this.items.Remove(item);
-            if (itemIndex == this.listIndex)
+            if (itemIndex != -1)
             {
-                this.listIndex = this.listIndex == 0 ? this.listIndex : this.listIndex - 1;
-                if (this.OnItemIndexChanged != null) 
-                    this.OnItemIndexChanged();
+                if (this.items[itemIndex].StackSize > 0) this.items[itemIndex].StackSize--;
+                else
+                {
+                    this.items.Remove(item);
+                    if (itemIndex == this.listIndex)
+                    {
+                        this.listIndex = this.listIndex == 0 ? this.listIndex : this.listIndex - 1;
+                        if (this.OnItemIndexChanged != null)
+                            this.OnItemIndexChanged();
+                    }
+                    if (this.OnItemChangedCallback != null)
+                        this.OnItemChangedCallback.Invoke();
+                }
+                return true;
             }
-            if (this.OnItemChangedCallback != null)
-                this.OnItemChangedCallback.Invoke();
-            return true;
+            else
+                return false;
         }
 
         public Item GetItem(int idx)

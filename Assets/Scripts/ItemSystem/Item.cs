@@ -8,6 +8,7 @@ namespace ItemSystem
         public string Name = "New Item";
         public string Description = "";
         public Sprite Icon = null;
+        public int StackSize = 1;
         public EnumRef.ItemCategory Category;
 
         public virtual void Use()
@@ -17,7 +18,9 @@ namespace ItemSystem
 
         protected void RemoveFromInventory()
         {
-            Inventory.s_Instance.Remove(this);
+            this.StackSize--;
+            if (this.StackSize == 0)
+                Inventory.s_Instance.Remove(this);
         }
     }
 }
