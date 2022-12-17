@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using ItemSystem;
 
@@ -110,6 +108,9 @@ namespace CharacterSystem
             this.Stats.INT.AddModifier("levelUp", this.Progression.INTModifier);
             this.Stats.PhysicalResist.AddModifier("levelUp", this.Progression.PhysicalResistModifier);
             this.Stats.MagicalResist.AddModifier("levelUp", this.Progression.MagicalResistModifier);
+
+            this.Stats.HP = this.Stats.MaxHP.Value;
+            this.Stats.MP = this.Stats.MaxMP.Value;
         }
     }
 }

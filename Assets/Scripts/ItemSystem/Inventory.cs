@@ -21,6 +21,7 @@ namespace ItemSystem
 
         public delegate void OnItemChanged();
         public OnItemChanged OnItemChangedCallback;
+        public System.Action OnItemIndexChanged;
         [SerializeField]
         private List<Item> items = new List<Item>();
         [SerializeField]
@@ -35,18 +36,22 @@ namespace ItemSystem
                 return false;
             }
             this.items.Add(item);
-            this.listIndex++;
             if (this.OnItemChangedCallback != null)
                 this.OnItemChangedCallback.Invoke();
+            if (this.OnItemIndexChanged != null) 
+                this.OnItemIndexChanged();
             return true;
         }
         public bool Remove(Item item)
         {
             int itemIndex = this.items.IndexOf(item);
             this.items.Remove(item);
-            this.listIndex--;
             if (itemIndex == this.listIndex)
+            {
                 this.listIndex = this.listIndex == 0 ? this.listIndex : this.listIndex - 1;
+                if (this.OnItemIndexChanged != null) 
+                    this.OnItemIndexChanged();
+            }
             if (this.OnItemChangedCallback != null)
                 this.OnItemChangedCallback.Invoke();
             return true;
@@ -65,6 +70,8 @@ namespace ItemSystem
                 return null;
             this.listIndex++;
             this.listIndex %= this.items.Count;
+            if (this.OnItemIndexChanged != null) 
+                this.OnItemIndexChanged();
 
             return this.items[this.listIndex];
         }
@@ -76,6 +83,8 @@ namespace ItemSystem
             this.listIndex--;
             if (this.listIndex < 0)
                 this.listIndex = this.items.Count - 1;
+            if (this.OnItemIndexChanged != null) 
+                this.OnItemIndexChanged();
 
             return this.items[this.listIndex];
         }

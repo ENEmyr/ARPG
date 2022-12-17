@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ItemSystem;
-using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using Unity.VisualScripting;
 
 namespace CharacterSystem
 {

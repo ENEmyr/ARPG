@@ -10,12 +10,12 @@ public class RotateItemBtn : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Inventory.s_Instance.OnItemIndexChanged += this.setUseItemBtnImage;
         rotateItemBtn = GameObject.Find(gameObject.name).GetComponent<Button>();
         rotateItemBtn.onClick.AddListener(rotateItemIndex);
         if (useItemBtn != null)
         {
             useItemBtn.onClick.AddListener(useItem);
-            setUseItemBtnImage(); // need to use invoke to send notify when inventory is changed
         }
         else
             Debug.LogWarning("UseItem button didn't set, so the UseItem button will not work");
@@ -24,7 +24,6 @@ public class RotateItemBtn : MonoBehaviour
     private void rotateItemIndex()
     {
         Item i = Inventory.s_Instance.NextItem();
-        setUseItemBtnImage();
     }
 
     private void setUseItemBtnImage()
@@ -48,6 +47,5 @@ public class RotateItemBtn : MonoBehaviour
     {
         Item i = Inventory.s_Instance.CurrentItem();
         i.Use();
-        setUseItemBtnImage();
     }
 }
