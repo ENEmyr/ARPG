@@ -6,8 +6,8 @@ namespace CharacterSystem
     {
         public override void Awake()
         {
-            this.HP = this.MaxHP;
-            this.MP = this.MaxMP;
+            this.HP = this.MaxHP.Value;
+            this.MP = this.MaxMP.Value;
         }
 
         public override void Die(EnumRef.DamageType dmgType)

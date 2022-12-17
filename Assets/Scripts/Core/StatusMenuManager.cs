@@ -35,8 +35,8 @@ public class StatusMenuManager : MonoBehaviour
         EXPBarRepresentative.fillAmount = expPercentage;
         T_Statuses.text = String.Format(
             "HP: {0}/{1}\tMP: {2}/{3}\nPEXP: {4}\tMEXP: {5}\nSTR: {6}\tINT: {7}\nPhysical Resistance: {8}\nMagical Resistance: {9}\nCurrent Weapon: {10}\nWeapon Resistance Modifier: {11}\nWeapon Damage Modifier: {12}\nWeapon Radius Modifier: {13}\nWeapon Skill: {14}",
-            (int)this.playerStats.HP, this.playerStats.MaxHP,
-            (int)this.playerStats.MP, this.playerStats.MaxMP,
+            (int)this.playerStats.HP, this.playerStats.MaxHP.Value,
+            (int)this.playerStats.MP, this.playerStats.MaxMP.Value,
             this.playerProgress.PEXP, this.playerProgress.MEXP,
             this.playerStats.STR.Value, this.playerStats.INT.Value,
             this.playerStats.PhysicalResist.Value, this.playerStats.MagicalResist.Value,

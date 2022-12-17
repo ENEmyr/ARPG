@@ -9,27 +9,30 @@ namespace CharacterSystem
     {
         [SerializeField]
         private float baseValue;
-        private List<float> modifier = new List<float>();
+        private IDictionary<string, float> modifier = new Dictionary<string, float>();
         public float Value
         {
             get
             {
                 if (this.modifier.Count > 0)
-                    return this.baseValue + this.modifier.Aggregate((acc, x) => acc + x);
+                    return this.baseValue + this.modifier.Values.Sum();
                 else 
                     return this.baseValue;
             }
             private set { }
         }
 
-        public void AddModifier(float m)
+        public void AddModifier(string k, float m)
         {
-            this.modifier.Add(m);
+            if (!modifier.ContainsKey(k))
+                this.modifier.Add(k, m);
+            else
+                this.modifier[k] += m;
         }
 
-        public void RemoveModifier(float m)
+        public void RemoveModifier(string k)
         {
-            this.modifier.Remove(m);
+            this.modifier.Remove(k);
         }
     }
 }

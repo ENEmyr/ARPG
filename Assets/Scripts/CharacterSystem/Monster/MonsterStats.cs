@@ -6,11 +6,16 @@ using CharacterSystem;
 public class MonsterStats : CharacterStats
 {
     public int EXPGain = 0;
+
+    public override void Awake()
+    {
+        this.HP = this.MaxHP.Value;
+        this.MP = this.MaxMP.Value;
+    }
     public override void Die(EnumRef.DamageType dmgType)
     {
-        this.IsDead = true;
         Player.s_Instance.Progression.ReceiveEXP(this.EXPGain, dmgType);
         Destroy(this.gameObject);
-        Debug.Log(this.Name + "is dying.");
+        base.Die(dmgType);
     }
 }

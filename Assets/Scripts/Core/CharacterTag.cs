@@ -23,6 +23,6 @@ public class CharacterTag : MonoBehaviour
     void Update()
     {
         t_Name.text = String.Format("< Level {0} >\n{1}", this.progression.Level, this.stats.Name);
-        this.hBRepresentative.fillAmount = this.stats.HP / this.stats.MaxHP;
+        this.hBRepresentative.fillAmount = this.stats.HP / this.stats.MaxHP.Value;
     }
 }

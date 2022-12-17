@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: make it can levelDown
 namespace CharacterSystem
 {
     public class CharacterProgression : MonoBehaviour
@@ -64,8 +65,8 @@ namespace CharacterSystem
             this.MaxMPModifier += 10 * multiplier;
             this.PhysicalResistModifier += this.ResistModifierPerLevel * multiplier;
             this.MagicalResistModifier += this.ResistModifierPerLevel * multiplier;
-            this.STRModifier = s_statusPointPerLevel * (this.MEXP / this.EXPCap) * multiplier; // STR/INT will increase in proportion to the EXP gained for each DamageType
-            this.INTModifier = s_statusPointPerLevel * (this.PEXP / this.EXPCap) * multiplier;
+            this.STRModifier += s_statusPointPerLevel * (Mathf.Clamp(this.PEXP, 0, this.EXPCap) / this.EXPCap) * multiplier; // STR/INT will increase in proportion to the EXP gained for each DamageType
+            this.INTModifier += s_statusPointPerLevel * (Mathf.Clamp(this.MEXP, 0, this.EXPCap) / this.EXPCap) * multiplier;
             this.EXPCap = calculateEXPCapForLevel(this.Level);
             this.MEXP = 0;
             this.PEXP = 0;

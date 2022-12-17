@@ -18,7 +18,7 @@ public class HealthBar : MonoBehaviour
 
     void Update()
     {
-        healthBar.fillAmount = stats.HP / stats.MaxHP;
-        manaBar.fillAmount = stats.MP / stats.MaxMP;
+        healthBar.fillAmount = stats.HP / stats.MaxHP.Value;
+        manaBar.fillAmount = stats.MP / stats.MaxMP.Value;
     }
 }

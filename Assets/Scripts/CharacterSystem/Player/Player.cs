@@ -5,6 +5,9 @@ using ItemSystem;
 
 namespace CharacterSystem
 {
+    [RequireComponent(typeof(PlayerStats))]
+    [RequireComponent(typeof(PlayerCombat))]
+    [RequireComponent(typeof(CharacterProgression))]
     public class Player : MonoBehaviour
     {
         #region Singleton
@@ -32,7 +35,7 @@ namespace CharacterSystem
 
         public void Start()
         {
-
+            this.Progression.OnLevelUp += this.updateStatsOnLevelUp;
         }
 
         public void Update()
@@ -81,8 +84,8 @@ namespace CharacterSystem
 
         public void Respawn()
         {
-            this.Stats.HP = this.Stats.MaxHP;
-            this.Stats.MP = this.Stats.MaxMP;
+            this.Stats.HP = this.Stats.MaxHP.Value;
+            this.Stats.MP = this.Stats.MaxMP.Value;
             this.Stats.IsDead = false;
         }
 
@@ -90,6 +93,23 @@ namespace CharacterSystem
         {
             SkillDamage skill = obj.gameObject.GetComponent<SkillDamage>();
             this.Stats.ReceiveDamage(skill.Amount, skill.Sk.DmgType);
+        }
+
+        private void updateStatsOnLevelUp()
+        {
+            this.Stats.MaxHP.RemoveModifier("levelUp");
+            this.Stats.MaxMP.RemoveModifier("levelUp");
+            this.Stats.STR.RemoveModifier("levelUp");
+            this.Stats.INT.RemoveModifier("levelUp");
+            this.Stats.PhysicalResist.RemoveModifier("levelUp");
+            this.Stats.MagicalResist.RemoveModifier("levelUp");
+
+            this.Stats.MaxHP.AddModifier("levelUp", this.Progression.MaxHPModifier);
+            this.Stats.MaxMP.AddModifier("levelUp", this.Progression.MaxMPModifier);
+            this.Stats.STR.AddModifier("levelUp", this.Progression.STRModifier);
+            this.Stats.INT.AddModifier("levelUp", this.Progression.INTModifier);
+            this.Stats.PhysicalResist.AddModifier("levelUp", this.Progression.PhysicalResistModifier);
+            this.Stats.MagicalResist.AddModifier("levelUp", this.Progression.MagicalResistModifier);
         }
     }
 }

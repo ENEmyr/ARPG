@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ItemSystem;
+using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using Unity.VisualScripting;
 
 namespace CharacterSystem
 {
@@ -9,25 +12,27 @@ namespace CharacterSystem
         public string Name;
         public float HP;
         public float MP;
-        public float MaxHP;
-        public float MaxMP;
+        public Stat MaxHP; 
+        public Stat MaxMP; 
         public Stat PhysicalResist;
         public Stat MagicalResist;
         public Stat STR;
         public Stat INT;
         public List<Stat> AbnormalStat;
         public List<Skill> Skills;
-        public List<Consumable> temporalAffect = new List<Consumable>();
+        public IDictionary<Consumable, float> TemporalAffect = new Dictionary<Consumable, float>();
         public bool IsDead = false;
 
         public virtual void Awake() { /* Init Stats */ }
 
-        public virtual void Start() { }
+        public virtual void Start() {
+            InvokeRepeating("passiveAffect", 1f, 1f); // repeat the method every 1s, 1s delay
+        }
 
         public virtual void Die(EnumRef.DamageType dmgType)
         {
             this.IsDead = true;
-            this.temporalAffect = new List<Consumable>();
+            this.TemporalAffect = new Dictionary<Consumable, float>();
             Debug.Log(this.Name + "is dying.");
         }
 
@@ -35,21 +40,17 @@ namespace CharacterSystem
         {
             if (!this.IsDead)
             {
-                if (this.HP < this.MaxHP)
+                if (this.HP < this.MaxHP.Value)
                 {
                     this.HP += Time.deltaTime;
-                    this.HP = Mathf.Clamp(this.HP, 0, this.MaxHP);
+                    this.HP = Mathf.Clamp(this.HP, 0, this.MaxHP.Value);
                 }
-                if (this.MP < this.MaxMP)
+                if (this.MP < this.MaxMP.Value)
                 {
                     this.MP += Time.deltaTime + ((this.STR.Value + this.INT.Value) * .1f) * Time.deltaTime; // 10% of STR+INT will be use to increase MP restoration rate/second
-                    this.MP = Mathf.Clamp(this.MP, 0, this.MaxMP);
+                    this.MP = Mathf.Clamp(this.MP, 0, this.MaxMP.Value);
                 }
-                foreach (Consumable item in this.temporalAffect)
-                {
-                    item.AffectTime -= Time.deltaTime;
-                }
-                passiveAffect();
+                //passiveAffect();
             }
         }
 
@@ -73,24 +74,42 @@ namespace CharacterSystem
         public void Affect(Consumable item, bool ignoreAffectTime = false)
         {
             if (item.AffectTime != 0f && !ignoreAffectTime)
-                temporalAffect.Add(item);
+            {
+                if (!this.TemporalAffect.ContainsKey(item))
+                    this.TemporalAffect.Add(item, Time.time+item.AffectTime);
+                else
+                {
+                    if (Time.time <= this.TemporalAffect[item])
+                        this.TemporalAffect[item] += item.AffectTime;
+                    else
+                        this.TemporalAffect[item] = Time.time + item.AffectTime;
+                }
+            }
             switch (item.BuffType)
             {
                 case EnumRef.BuffType.P_HP:
                     this.HP += item.AmountValue;
-                    this.HP = Mathf.Clamp(this.HP, 0, this.MaxHP);
+                    this.HP = Mathf.Clamp(this.HP, 0, this.MaxHP.Value);
                     break;
                 case EnumRef.BuffType.P_MP:
                     this.MP += item.AmountValue;
-                    this.MP = Mathf.Clamp(this.MP, 0, this.MaxMP);
+                    this.MP = Mathf.Clamp(this.MP, 0, this.MaxMP.Value);
+                    break;
+                 case EnumRef.BuffType.P_HPMax:
+                    if (!ignoreAffectTime)
+                    {
+                        float MaxHP = Mathf.Clamp(this.MaxHP.Value + item.AmountValue, this.MaxHP.Value + item.AmountValue, float.MaxValue);
+                        this.MaxHP.AddModifier(item.Name, MaxHP);
+                    }
+                    break;
+                 case EnumRef.BuffType.P_MPMax:
+                    if (!ignoreAffectTime)
+                    {
+                        float MaxMP = Mathf.Clamp(this.MaxMP.Value + item.AmountValue, this.MaxMP.Value + item.AmountValue, float.MaxValue);
+                        this.MaxMP.AddModifier(item.Name, MaxMP);
+                    }
                     break;
                 // TODO: implement other BuffType
-                // case EnumRef.BuffType.P_HPMax:
-                //     this.MaxHP = Mathf.Clamp(this.MaxHP + item.AmountValue, this.MaxHP + item.AmountValue, float.MaxValue);
-                //     break;
-                // case EnumRef.BuffType.P_MPMax:
-                //     this.MaxMP = Mathf.Clamp(this.MaxMP + item.AmountValue, this.MaxMP + item.AmountValue, float.MaxValue);
-                //     break;
                 default:
                     Debug.Log("The BuffType is not currently supported");
                     break;
@@ -99,15 +118,32 @@ namespace CharacterSystem
 
         private void passiveAffect()
         {
-            List<Consumable> destroyList = new List<Consumable>();
-            foreach (Consumable item in this.temporalAffect)
+            if (this.IsDead) return;
+            foreach (var e in this.TemporalAffect)
             {
-                if (item.AffectTime <= 0)
-                    destroyList.Add(item);
-                Affect(item, true);
+                if (Time.time > e.Value)
+                {
+                    switch (e.Key.BuffType)
+                    {
+                        case EnumRef.BuffType.P_HP:
+                            break;
+                        case EnumRef.BuffType.P_MP:
+                            break;
+                        // TODO: implement other BuffType
+                        case EnumRef.BuffType.P_HPMax:
+                            this.MaxHP.RemoveModifier(e.Key.Name);
+                            break;
+                        case EnumRef.BuffType.P_MPMax:
+                            this.MaxMP.RemoveModifier(e.Key.Name);
+                            break;
+                        default:
+                            Debug.Log("The BuffType is not currently supported");
+                            break;
+                    }
+                }
+                else
+                    Affect(e.Key, true);
             }
-            foreach (Consumable item in destroyList)
-                this.temporalAffect.Remove(item);
         }
     }
 }
